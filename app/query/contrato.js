@@ -1,12 +1,12 @@
 module.exports = function (app) {
    var graphql = app.get("graphql");
    var database = app.get("database");
-   var model = app.model.contrato;
+   var model = app.model.type.contrato;
 
    var contrato = {};
 
    contrato.listar = {
-     type : new graphql.GraphQLList(model.type),
+     type : new graphql.GraphQLList(model),
      resolve : function (_,args) {
         var res = listar();
         return res;
@@ -14,7 +14,7 @@ module.exports = function (app) {
    };
 
    contrato.listarContrato = {
-     type : model.type,
+     type : model,
      args : {
        _key : {
          type : graphql.GraphQLString

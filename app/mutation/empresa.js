@@ -1,15 +1,16 @@
 module.exports = function (app) {
    var graphql = app.get("graphql");
    var database = app.get("database");
-   var model = app.model.empresa;
+   var model = app.model.type.empresa;
+   var modelInput = app.model.typeInput.empresa;
 
    var empresa = {};
 
    empresa.salvar = {
-     type : model.type,
+     type : model,
      args : {
        input : {
-         type : new graphql.GraphQLNonNull(model.typeInput)
+         type : new graphql.GraphQLNonNull(modelInput)
        }
      },
      resolve : function (_,args) {
@@ -20,13 +21,13 @@ module.exports = function (app) {
 
 
    empresa.editar = {
-     type : model.type,
+     type : model,
      args : {
        _key : {
          type : graphql.GraphQLString
        },
        input : {
-         type : new graphql.GraphQLNonNull(model.typeInput)
+         type : new graphql.GraphQLNonNull(modelInput)
        }
      },
      resolve : function (_,args) {
@@ -36,7 +37,7 @@ module.exports = function (app) {
    };
 
    empresa.deletar = {
-     type : model.type,
+     type : model,
      args : {
        _key : {
          type : graphql.GraphQLString

@@ -1,12 +1,12 @@
 module.exports = function (app) {
    var graphql = app.get("graphql");
    var database = app.get("database");
-   var model = app.model.nivel;
+   var model = app.model.type.nivel;
 
    var nivel = {};
 
    nivel.listar = {
-     type : new graphql.GraphQLList(model.type),
+     type : new graphql.GraphQLList(model),
      resolve : function (_,args) {
         var res = listar();
         return res;
@@ -14,7 +14,7 @@ module.exports = function (app) {
    };
 
    nivel.listarNivel = {
-     type : model.type,
+     type : model,
      args : {
        _key : {
          type : graphql.GraphQLString
@@ -28,7 +28,7 @@ module.exports = function (app) {
 
    async function listar() {
       var resultados = await database.query("FOR nivel IN nivel RETURN nivel");
-      return resultados._result[0];
+      return resultados._result;
    };
 
 

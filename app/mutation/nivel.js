@@ -1,15 +1,16 @@
 module.exports = function (app) {
   var graphql = app.get("graphql");
   var database = app.get("database");
-  var model = app.model.nivel;
+  var model = app.model.type.nivel;
+  var modelInput = app.model.typeInput.nivel;
 
   var nivel = {};
 
   nivel.salvar = {
-    type : model.type,
+    type : model,
     args : {
       input : {
-        type : new graphql.GraphQLNonNull(model.typeInput)
+        type : new graphql.GraphQLNonNull(modelInput)
       }
     },
     resolve : function (_,args) {
@@ -19,13 +20,13 @@ module.exports = function (app) {
   };
 
   nivel.editar = {
-    type : model.type,
+    type : model,
     args : {
       _key : {
         type : graphql.GraphQLString
       },
       input : {
-        type : new graphql.GraphQLNonNull(model.typeInput)
+        type : new graphql.GraphQLNonNull(modelInput)
       }
     },
     resolve : function (_,args) {
@@ -35,7 +36,7 @@ module.exports = function (app) {
   };
 
   nivel.deletar = {
-    type : model.type,
+    type : model,
     args : {
       _key : {
         type : graphql.GraphQLString

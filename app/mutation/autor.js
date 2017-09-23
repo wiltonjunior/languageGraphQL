@@ -1,15 +1,16 @@
 module.exports = function (app) {
    var graphql = app.get("graphql");
    var database = app.get("database");
-   var model = app.model.autor;
+   var model = app.model.type.autor;
+   var modelInput = app.model.typeInput.autor;
 
    var autor = {};
 
    autor.salvar = {
-     type : model.type,
+     type : model,
      args : {
        input : {
-         type : new graphql.GraphQLNonNull(model.typeInput)
+         type : new graphql.GraphQLNonNull(modelInput)
        }
      },
      resolve : function (_,args) {
@@ -20,13 +21,13 @@ module.exports = function (app) {
 
 
    autor.editar = {
-     type : model.type,
+     type : model,
      args : {
        _key : {
          type : graphql.GraphQLString
        },
        input : {
-         type : new graphql.GraphQLNonNull(model.typeInput)
+         type : new graphql.GraphQLNonNull(modelInput)
        }
      },
      resolve : function (_,args) {
@@ -36,7 +37,7 @@ module.exports = function (app) {
    };
 
    autor.deletar = {
-     type : model.type,
+     type : model,
      args : {
        _key : {
          type : graphql.GraphQLString
@@ -50,6 +51,8 @@ module.exports = function (app) {
 
    async function salvarAutor(input) {
       var dbAutor = database.collection("autor");
+      input.status = 2;
+      input.caminhoImagem = "/imagem/usuario.jpg";
       var resultados = await dbAutor.save(input);
       var autor = await dbAutor.document(resultados._key);
       return autor;

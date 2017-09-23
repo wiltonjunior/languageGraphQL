@@ -1,15 +1,16 @@
 module.exports = function (app) {
    var graphql = app.get("graphql");
    var database = app.get("database");
-   var model = app.model.dialogo;
+   var model = app.model.type.dialogo;
+   var modelInput = app.model.typeInput.dialogo;
 
    var dialogo = {};
 
    dialogo.salvar = {
-     type : model.type,
+     type : model,
      args : {
        input : {
-         type : new graphql.GraphQLNonNull(model.typeInput)
+         type : new graphql.GraphQLNonNull(modelInput)
        }
      },
      resolve : function (_,args) {
@@ -20,13 +21,13 @@ module.exports = function (app) {
 
 
    dialogo.editar = {
-     type : model.type,
+     type : model,
      args : {
        _key : {
          type : graphql.GraphQLString
        },
        input : {
-         type : new graphql.GraphQLNonNull(model.typeInput)
+         type : new graphql.GraphQLNonNull(modelInput)
        }
      },
      resolve : function (_,args) {
@@ -36,10 +37,10 @@ module.exports = function (app) {
    };
 
    dialogo.deletar = {
-     type : model.type,
+     type : model,
      args : {
        _key : {
-         type : new graphql.GraphQLNonNull(model.typeInput)
+         type : graphql.GraphQLString
        }
      },
      resolve : function (_,args) {

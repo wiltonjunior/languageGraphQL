@@ -1,15 +1,16 @@
 module.exports = function (app) {
   var graphql = app.get("graphql");
   var database = app.get("database");
-  var model = app.model.administrador;
+  var model = app.model.type.administrador;
+  var modelInput = app.model.typeInput.administrador;
 
   var administrador = {};
 
   administrador.salvar = {
-    type : model.type,
+    type : model,
     args : {
       input : {
-        type : new graphql.GraphQLNonNull(model.typeInput)
+        type : new graphql.GraphQLNonNull(modelInput)
       }
     },
     resolve : function (_,args) {
@@ -20,13 +21,13 @@ module.exports = function (app) {
 
 
   administrador.editar = {
-    type : model.type,
+    type : model,
     args : {
       _key : {
         type : graphql.GraphQLString
       },
       input : {
-        type : new graphql.GraphQLNonNull(model.typeInput)
+        type : new graphql.GraphQLNonNull(modelInput)
       }
     },
     resolve : function (_,args) {
@@ -36,7 +37,7 @@ module.exports = function (app) {
   };
 
   administrador.deletar = {
-    type : model.type,
+    type : model,
     args : {
       _key : {
         type : graphql.GraphQLString
@@ -50,6 +51,8 @@ module.exports = function (app) {
 
   async function salvarAdministrador(input) {
      var dbAdministrador = database.collection("administrador");
+     input.status = 3;
+     input.caminhoImagem = "/imagem/usuario.jpg";
      var resultados = await dbAdministrador.save(input);
      var administrador = dbAdministrador.document(resultados._key);
      return administrador;
