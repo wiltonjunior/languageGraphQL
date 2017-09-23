@@ -21,7 +21,7 @@ module.exports = function (app) {
        }
      },
      resolve : function (_,args) {
-       var res = buscar(id);
+       var res = buscar(args._key);
        return res;
      }
    };
