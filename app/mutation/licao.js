@@ -49,9 +49,27 @@ module.exports = function (app) {
      }
    };
 
+   licao.avaliar = {
+     type : model,
+     args : {
+       _key : {
+         type : graphql.GraphQLString
+       },
+       avaliacao : {
+         type : graphql.GraphQLFloat
+       }
+     },
+     resolve : function (_,args) {
+        var res = avaliar(args._key,args.avaliacao);
+        return res;
+     }
+   };
+
 
    async function salvarLicao(input) {
       var dbLicao = database.collection("licao");
+      input.avaliacao = 0;
+      input.quantidadeVotos = 0;
       var resultados = await dbLicao.save(input);
       var licao = await dbLicao.document(resultados._key);
       return licao;
@@ -68,6 +86,16 @@ module.exports = function (app) {
       var dbLicao = database.collection("licao");
       var licao = await dbLicao.document(_key);
       var resultados = await dbLicao.remove(_key);
+      return licao;
+  };
+
+  async function avaliar(_key,avaliacao) {
+      var dbLicao = database.collection("licao");
+      var resultados = await dbLicao.document(_key);
+      var total = resultados.quantidadeVotos + 1;
+      var media = (resultados.avaliacao + avaliacao) / total;
+      var novaLicao = await dbLicao.update(_key,{"avaliacao" : media,"quantidadeVotos" : total});
+      var licao = await dbLicao.document(_key);
       return licao;
   }
 

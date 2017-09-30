@@ -50,8 +50,7 @@ module.exports = function (app) {
        dataTermino : {type : graphql.GraphQLString},
        palavraChave : {type : graphql.GraphQLString},
        idEmpresa : {type : graphql.GraphQLString},
-       idRegiao : {type : graphql.GraphQLString},
-       idTermo : {type : new graphql.GraphQLList(graphql.GraphQLString)}
+       idRegiao : {type : graphql.GraphQLString}
      }
    });
 

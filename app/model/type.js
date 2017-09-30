@@ -69,28 +69,6 @@ module.exports = function (app) {
      }
    });
 
-   type.contrato = new graphql.GraphQLObjectType({
-     name : "Contrato",
-     fields : {
-       _key : {type : graphql.GraphQLString},
-       dataInicio : {type : graphql.GraphQLString},
-       dataTermino : {type : graphql.GraphQLString},
-       palavraChave : {type : graphql.GraphQLString},
-       idEmpresa : {type : graphql.GraphQLString},
-       idRegiao : {type : graphql.GraphQLString},
-       idTermo : {type : new graphql.GraphQLList(graphql.GraphQLString)}
-     }
-   });
-
-   type.dialogo = new graphql.GraphQLObjectType({
-     name : "Dialogo",
-     fields : {
-       _key : {type : graphql.GraphQLString},
-       texto : {type : graphql.GraphQLString},
-       idLicao : {type : graphql.GraphQLString}
-     }
-   });
-
    type.empresa = new graphql.GraphQLObjectType({
      name : "Empresa",
      fields : {
@@ -136,12 +114,52 @@ module.exports = function (app) {
        data : {type : graphql.GraphQLString},
        avaliacao : {type : graphql.GraphQLInt},
        quantidadeVotos : {type : graphql.GraphQLInt},
-       autor : {type : type.autor},
-       idioma : {type : type.idioma},
-       nivel : {type : graphql.GraphQLString},
-       situacao : {type : graphql.GraphQLString}
+       autor : {
+         type : type.autor,
+         resolve : async function (licao) {
+            var autor = await database.query("FOR autor IN autor FILTER autor._key == @id RETURN autor",{'id' : licao.idAutor});
+            return autor._result[0];
+         }
+       },
+       idioma : {
+         type : type.idioma,
+         resolve : async function (licao) {
+            var idioma = await database.query("FOR idioma IN idioma FILTER idioma._key == @id RETURN idioma",{'id' : licao.idIdioma});
+            return idioma._result[0];
+         }
+       },
+       nivel : {
+         type : type.nivel,
+         resolve : async function (licao) {
+            var nivel = await database.query("FOR nivel IN nivel FILTER nivel._key == @id RETURN nivel",{'id' : licao.idNivel});
+            return nivel._result[0];
+         }
+       },
+       situacao : {
+         type : type.situacao,
+         resolve : async function (licao) {
+            var situacao = await database.query("FOR situacao IN situacao FILTER situacao._key == @id RETURN situacao",{'id' : licao.idSituacao});
+            return situacao._result[0];
+         }
+       }
      }
    });
+
+   type.dialogo = new graphql.GraphQLObjectType({
+      name : "Dialogo",
+      fields : {
+        _key : {type : graphql.GraphQLString},
+        texto : {type : graphql.GraphQLString},
+        licao : {
+          type : type.licao,
+          resolve : async function (dialogo) {
+              var licao = await database.query("FOR licao IN licao FILTER licao._key == @id RETURN licao",{'id' : dialogo.idLicao});
+              return licao._result[0];
+          }
+        }
+      }
+    });
+
 
    type.regiao = new graphql.GraphQLObjectType({
      name : "Regiao",
@@ -166,6 +184,52 @@ module.exports = function (app) {
        }
      }
    });
+
+   type.contrato = new graphql.GraphQLObjectType({
+     name : "Contrato",
+     fields : {
+       _key : {type : graphql.GraphQLString},
+       dataInicio : {type : graphql.GraphQLString},
+       dataTermino : {type : graphql.GraphQLString},
+       palavraChave : {type : graphql.GraphQLString},
+       empresa : {
+         type : type.empresa,
+         resolve : async function (contrato) {
+            var empresa = await database.query("FOR empresa IN empresa FILTER empresa._key == @id RETURN empresa",{'id' : contrato.idEmpresa});
+            return empresa._result[0];
+         }
+       },
+       regiao : {
+         type : type.regiao,
+         resolve : async function (contrato) {
+            var regiao = await database.query("FOR regiao IN regiao FILTER regiao._key == @id RETURN regiao",{'id' : contrato.idRegiao});
+            return regiao._result[0];
+         }
+       },
+       termos : {
+         type : new graphql.GraphQLList(type.termos),
+         resolve : async function (contrato) {
+            var i;
+            var termos = [];
+            for(i=0;i<contrato.idTermo.length;i++) {
+               var reslt = await database.query("FOR termos IN termos FILTER termos._key == @id RETURN termos",{'id' : contrato.idTermo[i]});
+               termos.push(reslt._result[i]);
+            }
+            return termos;
+         }
+       }
+     }
+   });
+
+    type.ranking = new graphql.GraphQLObjectType({
+      name : "Ranking",
+      fields : {
+        nomeAutor : {type : graphql.GraphQLString},
+        media : {type : graphql.GraphQLFloat},
+        total : {type : graphql.GraphQLInt}
+      }
+    });
+
 
 
    return type;
