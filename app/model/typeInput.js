@@ -14,32 +14,17 @@ module.exports = function (app) {
      }
    });
 
-   typeInput.aluno = new graphql.GraphQLInputObjectType({
-     name : "AlunoInput",
+   typeInput.usuario = new graphql.GraphQLInputObjectType({
+     name : "UsuarioInput",
      fields : {
-       nomeAluno : {type : graphql.GraphQLString},
-       emailAluno : {type : graphql.GraphQLString},
-       senhaAluno : {type : graphql.GraphQLString},
-       sexo : {type : graphql.GraphQLString},
-       telefone : {type : graphql.GraphQLString},
-       pais : {type : graphql.GraphQLString},
-       estado : {type : graphql.GraphQLString},
-       cidade : {type : graphql.GraphQLString}
-     }
-   });
-
-   typeInput.autor = new graphql.GraphQLInputObjectType({
-     name : "AutorInput",
-     fields : {
-       nomeAutor : {type : graphql.GraphQLString},
-       emailAutor : {type : graphql.GraphQLString},
-       senhaAutor : {type : graphql.GraphQLString},
-       sexo : {type : graphql.GraphQLString},
-       telefone : {type : graphql.GraphQLString},
-       pais : {type : graphql.GraphQLString},
-       estado : {type : graphql.GraphQLString},
-       cidade : {type : graphql.GraphQLString},
-       idIdioma : {type : graphql.GraphQLString}
+        nomeUsuario : {type : graphql.GraphQLString},
+        emailUsuario : {type : graphql.GraphQLString},
+        senhaUsuario : {type : graphql.GraphQLString},
+        telefone : {type : graphql.GraphQLString},
+        sexo : {type : graphql.GraphQLString},
+        pais : {type: graphql.GraphQLString},
+        estado : {type : graphql.GraphQLString},
+        cidade : {type : graphql.GraphQLString}
      }
    });
 
@@ -92,7 +77,7 @@ module.exports = function (app) {
        data : {type : graphql.GraphQLString},
        avaliacao : {type : graphql.GraphQLInt},
        quantidadeVotos : {type : graphql.GraphQLInt},
-       idAutor : {type : graphql.GraphQLString},
+       idUsuario : {type : graphql.GraphQLString},
        idIdioma : {type : graphql.GraphQLString},
        idNivel : {type : graphql.GraphQLString},
        idSituacao : {type : graphql.GraphQLString}

@@ -13,6 +13,8 @@
     "express": "^4.15.4",
     "express-graphql": "^0.6.7",
     "express-load": "^1.1.16",
-    "graphql": "^0.10.5"
+    "graphql": "^0.10.5",
+    "passport": "^0.4.0",
+    "passport-http": "^0.3.0"
   }
 }

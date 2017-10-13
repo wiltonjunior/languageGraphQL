@@ -51,10 +51,10 @@ module.exports = function (app) {
 
   async function salvarAdministrador(input) {
      var dbAdministrador = database.collection("administrador");
-     input.status = 3;
+     input.status = 2;
      input.caminhoImagem = "/imagem/usuario.jpg";
      var resultados = await dbAdministrador.save(input);
-     var administrador = dbAdministrador.document(resultados._key);
+     var administrador = await dbAdministrador.document(resultados._key);
      return administrador;
   };
 

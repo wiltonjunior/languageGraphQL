@@ -18,15 +18,15 @@ module.exports = function (app) {
      }
    });
 
-   type.aluno = new graphql.GraphQLObjectType({
-     name : "Aluno",
+   type.usuario = new graphql.GraphQLObjectType({
+     name : "Usuario",
      fields : {
        _key : {type : graphql.GraphQLString},
-       nomeAluno : {type : graphql.GraphQLString},
-       emailAluno : {type : graphql.GraphQLString},
-       senhaAluno : {type : graphql.GraphQLString},
-       sexo : {type : graphql.GraphQLString},
+       nomeUsuario : {type : graphql.GraphQLString},
+       emailUsuario : {type : graphql.GraphQLString},
+       senhaUsuario : {type : graphql.GraphQLString},
        telefone : {type : graphql.GraphQLString},
+       sexo : {type : graphql.GraphQLString},
        pais : {type : graphql.GraphQLString},
        estado : {type : graphql.GraphQLString},
        cidade : {type : graphql.GraphQLString},
@@ -42,30 +42,6 @@ module.exports = function (app) {
        idioma : {type : graphql.GraphQLString},
        descricao : {type : graphql.GraphQLString},
        caminhoImagem : {type : graphql.GraphQLString}
-     }
-   });
-
-   type.autor = new graphql.GraphQLObjectType({
-     name : "Autor",
-     fields : {
-       _key : {type : graphql.GraphQLString},
-       nomeAutor : {type : graphql.GraphQLString},
-       emailAutor : {type : graphql.GraphQLString},
-       senhaAutor : {type : graphql.GraphQLString},
-       sexo : {type : graphql.GraphQLString},
-       telefone : {type : graphql.GraphQLString},
-       pais : {type : graphql.GraphQLString},
-       estado : {type : graphql.GraphQLString},
-       cidade : {type : graphql.GraphQLString},
-       idioma : {
-         type : type.idioma,
-         resolve : async function (autor) {
-             var idioma = await database.query("FOR idioma IN idioma FILTER idioma._key == @id RETURN idioma",{'id' : autor.idIdioma});
-             return idioma._result[0];
-         }
-       },
-       caminhoImagem : {type : graphql.GraphQLString},
-       status : {type : graphql.GraphQLInt}
      }
    });
 
@@ -114,11 +90,11 @@ module.exports = function (app) {
        data : {type : graphql.GraphQLString},
        avaliacao : {type : graphql.GraphQLInt},
        quantidadeVotos : {type : graphql.GraphQLInt},
-       autor : {
-         type : type.autor,
+       usuario : {
+         type : type.usuario,
          resolve : async function (licao) {
-            var autor = await database.query("FOR autor IN autor FILTER autor._key == @id RETURN autor",{'id' : licao.idAutor});
-            return autor._result[0];
+            var usuario = await database.query("FOR usuario IN usuario FILTER usuario._key == @id RETURN usuario",{'id' : licao.idUsuario});
+            return usuario._result[0];
          }
        },
        idioma : {
@@ -211,11 +187,50 @@ module.exports = function (app) {
          resolve : async function (contrato) {
             var i;
             var termos = [];
-            for(i=0;i<contrato.idTermo.length;i++) {
-               var reslt = await database.query("FOR termos IN termos FILTER termos._key == @id RETURN termos",{'id' : contrato.idTermo[i]});
-               termos.push(reslt._result[i]);
+            var valor = Array.isArray(contrato.idTermo);
+            if(valor==true) {
+              for(i=0;i<contrato.idTermo.length;i++) {
+                 var reslt = await database.query("FOR termos IN termos FILTER termos._key == @id RETURN termos",{'id' : contrato.idTermo[i]});
+                 termos.push(reslt._result[0]);
+              }
+            }
+            else {
+               var termo = await database.query("FOR termos IN termos FILTER termos._key == @id RETURN termos",{'id' : contrato.idTermo});
+               termos.push(termo._result[0]);
             }
             return termos;
+         }
+       }
+     }
+   });
+
+   type.estudo = new graphql.GraphQLObjectType({
+     name : "Estudo",
+     fields : {
+       usuario : {
+         type : type.usuario,
+         resolve : async function (estudo) {
+            var usuario = await database.query("FOR usuario IN usuario FILTER usuario._key == @id RETURN usuario",{'id' : estudo._key});
+            return usuario._result[0];
+         }
+       },
+       idiomas : {
+         type : new graphql.GraphQLList(type.idioma),
+         resolve : async function (estudo) {
+            var i;
+            var idiomas = [];
+            var valor = Array.isArray(estudo.idIdioma);
+            if(valor==true) {
+              for(i=0;i<estudo.idIdioma.length;i++) {
+                 var reslt = await database.query("FOR idioma IN idioma FILTER idioma._key == @id RETURN idioma",{'id' : estudo.idIdioma[i]});
+                 idiomas.push(reslt._result[0]);
+              }
+            }
+            else {
+              var idioma = await database.query("FOR idioma IN idioma FILTER idioma._key == @id RETURN idioma",{'id' : estudo.idIdioma});
+              idiomas.push(idioma._result[0]);
+            }
+            return idiomas;
          }
        }
      }
@@ -224,9 +239,9 @@ module.exports = function (app) {
     type.ranking = new graphql.GraphQLObjectType({
       name : "Ranking",
       fields : {
-        nomeAutor : {type : graphql.GraphQLString},
-        media : {type : graphql.GraphQLFloat},
-        total : {type : graphql.GraphQLInt}
+        nomeUsuario : {type : graphql.GraphQLString},
+        Media : {type : graphql.GraphQLFloat},
+        Total : {type : graphql.GraphQLInt}
       }
     });
 
